@@ -30,6 +30,8 @@
   "null-ls.nvim": { "branch": "main", "commit": "915558963709ea17c5aa246ca1c9786bfee6ddb4" },
   "nvim-bufferline.lua": { "branch": "main", "commit": "028a87933d99f8bb88f2f70a4def3ff9574f3594" },
   "nvim-cmp": { "branch": "main", "commit": "983453e32cb35533a119725883c04436d16c0120" },
+  "nvim-jdtls": { "branch": "master", "commit": "a5c6f38f8151d7b4f5b32c005a95022fa66f4c9d" },
+  "nvim-jdtls-bundles": { "branch": "main", "commit": "2550478a1274f99e0ea99f398ec97a322c71d51d" },
   "nvim-lspconfig": { "branch": "master", "commit": "2df0fbdadd947cd2995566a0117b8802a9ba74f4" },
   "nvim-navic": { "branch": "master", "commit": "7a2b823152fe4de65ee7925b0e32d26ed73bc57c" },
   "nvim-notify": { "branch": "master", "commit": "b005821516f1f37801a73067afd1cef2dbc4dfe8" },
