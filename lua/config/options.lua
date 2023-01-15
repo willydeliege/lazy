@@ -2,29 +2,29 @@
 --Default options that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/options.lua
 --Add any additional options here
 --This file is automatically loaded by plugins.config
-
-vim.cmd([[let g:clipboard = {
-  \   'name': 'xsel-clipboard',
-  \   'copy': {
-  \      '+': 'xsel -ib',
-  \      '*': 'xsel -ib',
-  \    },
-  \   'paste': {
-  \      '+': 'xsel -ob',
-  \      '*': 'xsel -ob',
-  \   },
-  \   'cache_enabled': 0,
-  \ }]])
-
+vim.g.clipboard = {
+  name = "custom clipboard",
+  copy = {
+    ["+"] = "xsel -i --clipboard",
+    ["*"] = "xsel -i --clipboard",
+  },
+  paste = {
+    ["+"] = "xsel -o --clipboard",
+    ["*"] = "xsel -o --clipboard",
+  },
+  cache_enabled = 1,
+}
 vim.g.mapleader = " "
 
 vim.g.maplocalleader = " "
 
 vim.opt.autowrite = true -- enable auto write
 
-vim.opt.cmdheight = 1
+vim.opt.cmdheight = 0
 
 vim.opt.completeopt = "menu,menuone,noselect"
+
+vim.opt.clipboard = "unnamedplus"
 
 vim.opt.conceallevel = 3 -- Hide * markup for bold and italic
 
@@ -40,7 +40,7 @@ vim.opt.grepformat = "%f:%l:%c:%m"
 
 vim.opt.grepprg = "rg --vimgrep"
 
-vim.opt.guifont = "FiraCode Nerd Font:h11"
+vim.opt.guifont = "JetBrainsMono NF:h11"
 
 vim.opt.hidden = true -- Enable modified buffers in background
 
@@ -82,7 +82,7 @@ vim.opt.smartcase = true -- Don't ignore case with capitals
 
 vim.opt.smartindent = true -- Insert indents automatically
 
-vim.opt.spelllang = { "en" }
+vim.opt.spelllang = { "en", "fr" }
 
 vim.opt.splitbelow = true -- Put new windows below current
 
@@ -99,12 +99,19 @@ vim.opt.undofile = true
 vim.opt.undolevels = 10000
 
 vim.opt.updatetime = 200 -- save swap file and trigger CursorHold
+vim.opt.swapfile = false --disable swapfile
 
 vim.opt.wildmode = "longest:full,full" -- Command-line completion mode
 
 vim.go.winminwidth = 5 -- minimum window width
 
 vim.opt.wrap = false -- Disable line wrap
+
+vim.opt.foldmethod = "expr"
+
+vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+
+vim.opt.foldlevel = 99
 
 if vim.fn.has("nvim-0.9.0") == 1 then
   vim.opt.splitkeep = "screen"

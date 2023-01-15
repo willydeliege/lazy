@@ -1,17 +1,14 @@
 return {
-
   -- tokyonight
   {
-    "Mofiqul/dracula.nvim",
+    "folke/tokyonight.nvim",
     lazy = false,
     priority = 1000,
     config = function()
-      require("dracula").setup({
-        colors = {
-          bg = "#000000",
-        },
-      })
-      vim.cmd([[colorscheme dracula]])
+      -- Lua
+      require("tokyonight").setup({})
+      -- Lua
+      vim.cmd([[colorscheme tokyonight-night]])
     end,
   },
 }

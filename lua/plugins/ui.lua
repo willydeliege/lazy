@@ -43,11 +43,11 @@ return {
   -- bufferline
   {
     "akinsho/nvim-bufferline.lua",
-    event = "BufAdd",
+    event = "BufReadPre",
     opts = {
       options = {
         diagnostics = "nvim_lsp",
-        always_show_bufferline = false,
+        always_show_bufferline = true,
         diagnostics_indicator = function(_, _, diag)
           local icons = require("config.settings").icons.diagnostics
           local ret = (diag.error and icons.Error .. diag.error .. " " or "")
@@ -64,12 +64,13 @@ return {
         },
       },
     },
+    keys = {},
   },
 
   -- statusline
   {
     "nvim-lualine/lualine.nvim",
-    event = "VeryLazy",
+    event = "BufReadPre",
     opts = function(plugin)
       local icons = require("config.settings").icons
 
@@ -102,25 +103,34 @@ return {
             },
             { "filetype", icon_only = true, separator = "", padding = { left = 1, right = 0 } },
             { "filename", path = 1, symbols = { modified = "  ", readonly = "", unnamed = "" } },
-        -- stylua: ignore
-        {
-          function() return require("nvim-navic").get_location() end,
-          cond = function() return package.loaded["nvim-navic"] and require("nvim-navic").is_available() end,
-        },
+            {
+              function()
+                return require("nvim-navic").get_location()
+              end,
+              cond = function()
+                return package.loaded["nvim-navic"] and require("nvim-navic").is_available()
+              end,
+            },
           },
           lualine_x = {
-        -- stylua: ignore
-        {
-          function() return require("noice").api.status.command.get() end,
-          cond = function() return package.loaded["noice"] and require("noice").api.status.command.has() end,
-          color = fg("Statement")
-        },
-        -- stylua: ignore
-        {
-          function() return require("noice").api.status.mode.get() end,
-          cond = function() return package.loaded["noice"] and require("noice").api.status.mode.has() end,
-          color = fg("Constant") ,
-        },
+            {
+              function()
+                return require("noice").api.status.command.get()
+              end,
+              cond = function()
+                return package.loaded["noice"] and require("noice").api.status.command.has()
+              end,
+              color = fg("Statement"),
+            },
+            {
+              function()
+                return require("noice").api.status.mode.get()
+              end,
+              cond = function()
+                return package.loaded["noice"] and require("noice").api.status.mode.has()
+              end,
+              color = fg("Constant"),
+            },
             { require("lazy.status").updates, cond = require("lazy.status").has_updates, color = fg("Special") },
             {
               "diff",
@@ -141,7 +151,7 @@ return {
             end,
           },
         },
-        extensions = { "nvim-tree" },
+        extensions = { "neo-tree" },
       }
     end,
   },
@@ -195,6 +205,7 @@ return {
         bottom_search = true,
         command_palette = true,
         long_message_to_split = true,
+        lsp_doc_border = true,
       },
     },
     -- stylua: ignore
@@ -291,4 +302,33 @@ return {
 
   -- ui components
   "MunifTanjim/nui.nvim",
+
+  -- window picker
+  {
+    "s1n7ax/nvim-window-picker",
+    event = "VeryLazy",
+    opts = {
+      other_win_hl_color = "#4144CC",
+    },
+    keys = {
+      {
+        "<leader>wp",
+        function()
+          local picker = require("window-picker")
+          local picked_window_id = picker.pick_window() or vim.api.nvim_get_current_win()
+          vim.api.nvim_set_current_win(picked_window_id)
+        end,
+        desc = "Pick a window",
+      },
+      {
+        "<leader>wP",
+        function()
+          local picker = require("window-picker")
+          local picked_window_id = picker.pick_window() or vim.api.nvim_get_current_win()
+          vim.api.nvim_win_close(picked_window_id, true)
+        end,
+        desc = "Pick and close window",
+      },
+    },
+  },
 }

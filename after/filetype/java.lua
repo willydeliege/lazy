@@ -1,14 +1,14 @@
 local jdtls_ok, jdtls = pcall(require, "jdtls")
 if not jdtls_ok then
-  vim.notify "JDTLS not found, install with `:LspInstall jdtls`"
+  vim.notify("JDTLS not found, install with `:LspInstall jdtls`")
   return
 end
 
 -- Installation location of jdtls by nvim-lsp-installer
-local mason_path = vim.fn.stdpath "data" .. "/mason/" 
+local mason_path = vim.fn.stdpath("data") .. "/mason/"
 local JDTLS_BIN = mason_path .. "/bin/jdtls"
 -- Data directory - change it to your liking
-local HOME = os.getenv "HOME"
+local HOME = os.getenv("HOME")
 local WORKSPACE_PATH = HOME .. "/workspace/java/"
 
 -- Debugger installation location
@@ -79,12 +79,17 @@ local config = {
       format = {
         enabled = true,
         settings = {
-          url = vim.fn.stdpath "config" .. "/lang-servers/intellij-java-google-style.xml",
+          url = vim.fn.stdpath("config") .. "/lang-servers/intellij-java-google-style.xml",
           profile = "GoogleStyle",
         },
       },
     },
     signatureHelp = { enabled = true },
+    inlayHints = {
+      parameterNames = {
+        enabled = "all",
+      },
+    },
     completion = {
       favoriteStaticMembers = {
         "org.hamcrest.MatcherAssert.assertThat",

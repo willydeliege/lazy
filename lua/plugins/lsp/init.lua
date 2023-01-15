@@ -14,6 +14,7 @@ return {
     opts = {
       ---@type lspconfig.options
       servers = {
+        jdtls = {},
         jsonls = {},
         sumneko_lua = {
           settings = {
@@ -80,6 +81,7 @@ return {
             if opts.setup[server](server, server_opts) then
               return
             end
+          elseif server.name == "jdtls" then
           elseif opts.setup["*"] then
             if opts.setup["*"](server, server_opts) then
               return

@@ -22,8 +22,17 @@ return {
     end,
     opts = {
       filesystem = {
+        bind_to_cwd = true, -- true creates a 2-way binding between vim's cwd and neo-tree's root
+        cwd_target = {
+          sidebar = "tab", -- sidebar is when position = left or right
+          current = "window", -- current is when position = current
+        },
         follow_current_file = true,
         hijack_netrw_behavior = "open_current",
+      },
+      buffers = {
+        bind_to_cwd = true,
+        follow_current_file = true, -- This will find and focus the file in the active buffer every time
       },
     },
   },
@@ -40,17 +49,49 @@ return {
   { "khaveesh/vim-fish-syntax", ft = { "fish" } },
   { "ericpruitt/tmux.vim", ft = { "tmux" } },
 
+  {
+    "mbbill/undotree",
+    cmd = "UndotreeToggle",
+    keys = { { "<F5>", "<cmd>UndotreeToggle<cr>", desc = "Undo file" } },
+  },
+
+  {
+    "ahmedkhalf/project.nvim",
+    dependencies = { { "nvim-telescope/telescope.nvim" } },
+    config = function()
+      require("project_nvim").setup({
+        detection_methods = { "pattern", "lsp" },
+        -- ignore_lsp = { "null-ls" },
+        silent_chdir = false,
+        show_hidden = true,
+      })
+      require("telescope").load_extension("projects")
+    end,
+    keys = {
+      {
+        "<leader>fp",
+        function()
+          require("telescope").extensions.projects.projects({})
+        end,
+        desc = "Find projects",
+      },
+    },
+  },
   -- fuzzy finder
   {
     "nvim-telescope/telescope.nvim",
     cmd = "Telescope",
+    dependencies = {
+      {
+        "nvim-telescope/telescope-file-browser.nvim",
+      },
+    },
     version = false, -- telescope did only one release, so use HEAD for now
     keys = {
-      { "<leader>/", util.telescope("live_grep"), desc = "Find in Files (Grep)" },
-      { "<leader><space>", util.telescope("files"), desc = "Find Files (root dir)" },
+      { "<leader>/", "<cmd>Telescope live_grep<cr>", desc = "Search in Files" },
+      { "<leader><space>", "<cmd>Telescope find_files<cr>", desc = "Find Files" },
       { "<leader>fb", "<cmd>Telescope buffers<cr>", desc = "Buffers" },
-      { "<leader>ff", util.telescope("files"), desc = "Find Files (root dir)" },
-      { "<leader>fF", util.telescope("files", { cwd = false }), desc = "Find Files (cwd)" },
+      { "<leader>ff", "<cmd>Telescope find_files<cr>", desc = "Find Files" },
       { "<leader>fr", "<cmd>Telescope oldfiles<cr>", desc = "Recent" },
       { "<leader>gc", "<cmd>Telescope git_commits<CR>", desc = "commits" },
       { "<leader>gs", "<cmd>Telescope git_status<CR>", desc = "status" },
@@ -65,8 +106,7 @@ return {
       { "<leader>ht", "<cmd>Telescope builtin<cr>", desc = "Telescope" },
       { "<leader>sb", "<cmd>Telescope current_buffer_fuzzy_find<cr>", desc = "Buffer" },
       { "<leader>sc", "<cmd>Telescope command_history<cr>", desc = "Command History" },
-      { "<leader>sg", util.telescope("live_grep"), desc = "Grep (root dir)" },
-      { "<leader>sG", util.telescope("live_grep", { cwd = false }), desc = "Grep (cwd)" },
+      { "<leader>sg", "<cmd>Telescope live_grep<cr>", desc = "Grep (root dir)" },
       { "<leader>sm", "<cmd>Telescope marks<cr>", desc = "Jump to Mark" },
       { "<leader>,", "<cmd>Telescope buffers show_all_buffers=true<cr>", desc = "Switch Buffer" },
       { "<leader>:", "<cmd>Telescope command_history<cr>", desc = "Command History" },
@@ -89,37 +129,46 @@ return {
         desc = "Goto Symbol",
       },
     },
-    opts = {
-      defaults = {
-        prompt_prefix = " ",
-        selection_caret = " ",
-        mappings = {
-          i = {
-            ["<c-t>"] = function(...)
-              return require("trouble.providers.telescope").open_with_trouble(...)
-            end,
-            ["<C-i>"] = function()
-              util.telescope("find_files", { no_ignore = true })()
-            end,
-            ["<C-h>"] = function()
-              util.telescope("find_files", { hidden = true })()
-            end,
-            ["<C-Down>"] = function(...)
-              return require("telescope.actions").cycle_history_next(...)
-            end,
-            ["<C-Up>"] = function(...)
-              return require("telescope.actions").cycle_history_prev(...)
+    config = function()
+      local actions = require("telescope.actions")
+      require("telescope").setup({
+        defaults = {
+          mappings = {
+            i = {
+              ["<C-j>"] = actions.move_selection_next,
+              ["<C-k>"] = actions.move_selection_previous,
+              ["<C-n>"] = actions.cycle_history_next,
+              ["<C-p>"] = actions.cycle_history_prev,
+            },
+          },
+          file_ignore_patterns = { "^.git/", "^node_modules/", "^vendor/" },
+          prompt_prefix = " ",
+          selection_caret = " ",
+        },
+        pickers = {
+          find_files = {
+            hidden = true,
+            find_command = { "rg", "--files", "--hidden", "-g", "!.git" },
+          },
+          live_grep = {
+            hidden = true,
+            additional_args = function(_)
+              return { "--hidden" }
             end,
           },
+          git_files = {
+            theme = "dropdown",
+          },
         },
-      },
-    },
+      })
+      require("telescope").load_extension("file_browser")
+    end,
   },
 
   -- easily jump to any location and enhanced f/t motions for Leap
   {
     "ggandor/leap.nvim",
-    event = "VeryLazy",
+    event = "BufReadPre",
     dependencies = { { "ggandor/flit.nvim", opts = { labeled_modes = "nv" } } },
     config = function(_, opts)
       local leap = require("leap")
@@ -157,8 +206,14 @@ return {
         ["<leader>s"] = { name = "+search" },
         ["<leader>T"] = { name = "+toggle" },
         ["<leader>t"] = { name = "+tasks" },
+        ["<leader>tb"] = { name = "+burndown" },
+        ["<leader>th"] = { name = "+history" },
+        ["<leader>tG"] = { name = "+Ghistory" },
+        ["<leader>tc"] = { name = "+choose" },
         ["<leader>x"] = { name = "+diagnostics/quickfix" },
         ["<leader>w"] = { name = "+windows" },
+        ["<leader>z"] = { name = "+zettelkasten" },
+        ["<leader>zd"] = { name = "+diary" },
         ["<leader><tab>"] = { name = "+tabs" },
       })
     end,
