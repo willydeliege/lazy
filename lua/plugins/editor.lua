@@ -48,6 +48,23 @@ return {
   -- tmux and  fish filetypes
   { "khaveesh/vim-fish-syntax", ft = { "fish" } },
   { "ericpruitt/tmux.vim", ft = { "tmux" } },
+  {
+    "alexghergh/nvim-tmux-navigation",
+    lazy = false,
+    config = function()
+      require("nvim-tmux-navigation").setup({
+        disable_when_zoomed = true, -- defaults to false
+        keybindings = {
+          left = "<C-h>",
+          down = "<C-j>",
+          up = "<C-k>",
+          right = "<C-l>",
+          last_active = "<C-\\>",
+          next = "<C-Space>",
+        },
+      })
+    end,
+  },
 
   {
     "mbbill/undotree",
@@ -55,35 +72,34 @@ return {
     keys = { { "<F5>", "<cmd>UndotreeToggle<cr>", desc = "Undo file" } },
   },
 
-  {
-    "ahmedkhalf/project.nvim",
-    dependencies = { { "nvim-telescope/telescope.nvim" } },
-    config = function()
-      require("project_nvim").setup({
-        detection_methods = { "pattern", "lsp" },
-        -- ignore_lsp = { "null-ls" },
-        silent_chdir = false,
-        show_hidden = true,
-      })
-      require("telescope").load_extension("projects")
-    end,
-    keys = {
-      {
-        "<leader>fp",
-        function()
-          require("telescope").extensions.projects.projects({})
-        end,
-        desc = "Find projects",
-      },
-    },
-  },
   -- fuzzy finder
   {
     "nvim-telescope/telescope.nvim",
-    cmd = "Telescope",
+    lazy = false,
     dependencies = {
       {
         "nvim-telescope/telescope-file-browser.nvim",
+      },
+      {
+        "ahmedkhalf/project.nvim",
+        config = function()
+          require("project_nvim").setup({
+            detection_methods = { "pattern", "lsp" },
+            -- ignore_lsp = { "null-ls" },
+            silent_chdir = false,
+            show_hidden = true,
+          })
+          require("telescope").load_extension("projects")
+        end,
+        keys = {
+          {
+            "<leader>fp",
+            function()
+              require("telescope").extensions.projects.projects({})
+            end,
+            desc = "Find projects",
+          },
+        },
       },
     },
     version = false, -- telescope did only one release, so use HEAD for now

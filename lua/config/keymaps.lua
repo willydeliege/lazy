@@ -9,11 +9,11 @@ keymap("n", "k", "v:count == 0 ? 'gkzz' : 'kzz'", { expr = true, silent = true }
 
 -- FIXME: document all keymaps
 
--- Move to window using the <ctrl> hjkl keys
-keymap("n", "<C-h>", "<C-w>h", { desc = "Go to left window" })
-keymap("n", "<C-j>", "<C-w>j", { desc = "Go to lower window" })
-keymap("n", "<C-k>", "<C-w>k", { desc = "Go to upper window" })
-keymap("n", "<C-l>", "<C-w>l", { desc = "Go to right window" })
+-- -- Move to window using the <ctrl> hjkl keys
+-- keymap("n", "<C-h>", "<C-w>h", { desc = "Go to left window" })
+-- keymap("n", "<C-j>", "<C-w>j", { desc = "Go to lower window" })
+-- keymap("n", "<C-k>", "<C-w>k", { desc = "Go to upper window" })
+-- keymap("n", "<C-l>", "<C-w>l", { desc = "Go to right window" })
 
 -- Resize window using <ctrl> arrow keys
 keymap("n", "<C-Up>", "<cmd>resize +2<CR>", { desc = "Increase window height" })
