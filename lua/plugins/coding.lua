@@ -100,31 +100,35 @@ return {
 
   -- auto pairs
   {
-    "echasnovski/mini.pairs",
+    "windwp/nvim-autopairs",
     event = "BufReadPre",
+    opts = {
+      fast_wrap = {
+        map = "<M-e>",
+        chars = { "{", "[", "(", '"', "'" },
+        pattern = [=[[%'%"%)%>%]%)%}%,]]=],
+        end_key = "$",
+        keys = "qwertyuiopzxcvbnmasdfghjkl",
+        check_comma = true,
+        highlight = "Search",
+        highlight_grey = "Comment",
+      },
+    },
     config = function(_, opts)
-      require("mini.pairs").setup(opts)
+      require("nvim-autopairs").setup(opts)
+      local cmp_autopairs = require("nvim-autopairs.completion.cmp")
+      local cmp = require("cmp")
+      cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
     end,
   },
 
   -- surround
   {
-    "echasnovski/mini.surround",
-    keys = { "gz" },
-    opts = {
-      mappings = {
-        add = "gza", -- Add surrounding in Normal and Visual modes
-        delete = "gzd", -- Delete surrounding
-        find = "gzf", -- Find surrounding (to the right)
-        find_left = "gzF", -- Find surrounding (to the left)
-        highlight = "gzh", -- Highlight surrounding
-        replace = "gzr", -- Replace surrounding
-        update_n_lines = "gzn", -- Update `n_lines`
-      },
-    },
-    config = function(_, opts)
-      -- use gz mappings instead of s to prevent conflict with leap
-      require("mini.surround").setup(opts)
+    "kylechui/nvim-surround",
+    version = "*",
+    event = "BufReadPre",
+    config = function()
+      require("nvim-surround").setup()
     end,
   },
 
