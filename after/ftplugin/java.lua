@@ -14,7 +14,7 @@ local WORKSPACE_PATH = HOME .. "/workspace/java/"
 -- Debugger installation location
 
 -- Only for Linux and Mac
-local SYSTEM = "linux"
+-- local SYSTEM = "linux"
 
 local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
 local workspace_dir = WORKSPACE_PATH .. project_name
@@ -23,6 +23,9 @@ local root_markers = { "mvnw", "gradlew", "pom.xml", "build.gradle" }
 local root_dir = vim.fs.dirname(vim.fs.find(root_markers, { upward = true })[1])
 local lombok_path = mason_path .. "/packages/jdtls/lombok.jar"
 
+local extendedClientCapabilities = require("jdtls").extendedClientCapabilities
+extendedClientCapabilities.resolveAdditionalTextEditsSupport = true
+
 -- -- Debugging
 -- local bundles = {
 --   vim.fn.glob(
@@ -30,7 +33,6 @@ local lombok_path = mason_path .. "/packages/jdtls/lombok.jar"
 --   ),
 -- }
 -- vim.list_extend(bundles, vim.split(vim.fn.glob(DEBUGGER_LOCATION .. "/vscode-java-test/server/*.jar"), "\n"))
-
 local config = {
   cmd = {
     JDTLS_BIN,
@@ -39,8 +41,39 @@ local config = {
     workspace_dir,
   },
 
-  on_attach = require("config.lsp").on_attach,
-  capabilities = require("config.lsp").capabilities,
+  on_attach = function(_, bufnr)
+    require("jdtls").setup_dap({ hotcodereplace = "auto" })
+    require("jdtls.dap").setup_dap_main_class_configs({ verbose = true })
+    require("jdtls.setup").add_commands()
+    vim.lsp.codelens.refresh()
+    vim.keymap.set("n", "<A-o>", jdtls.organize_imports, { silent = true, buffer = bufnr, desc = "Organize imports" })
+    vim.keymap.set("n", "<leader>df", jdtls.test_class, { silent = true, buffer = bufnr, desc = "Test class" })
+    vim.keymap.set(
+      "n",
+      "<leader>dn",
+      jdtls.test_nearest_method,
+      { silent = true, buffer = bufnr, desc = "Test method" }
+    )
+    vim.keymap.set(
+      "n",
+      "<leader>crv",
+      jdtls.extract_variable,
+      { silent = true, buffer = bufnr, desc = "Extract variable" }
+    )
+    vim.keymap.set(
+      "v",
+      "<leader>crm",
+      [[<ESC><CMD>lua require('jdtls').extract_method(true)<CR>]],
+      { silent = true, buffer = bufnr, desc = "Extract method" }
+    )
+    vim.keymap.set(
+      "n",
+      "<leader>crc",
+      jdtls.extract_constant,
+      { silent = true, buffer = bufnr, desc = "Extract constant" }
+    )
+  end,
+  --  capabilities = require("config.lsp").capabilities,
   root_dir = root_dir,
 
   -- Here you can configure eclipse.jdt.ls specific settings
@@ -56,7 +89,7 @@ local config = {
         runtimes = {
           {
             name = "JavaSE-11",
-            path = "/home/willefi/.sdkman/candidates/java/11.0.16.1-tem/",
+            path = "/home/willefi/.sdkman/candidates/java/11.0.17-tem/",
           },
           {
             name = "JavaSE-17",
@@ -102,7 +135,7 @@ local config = {
       },
     },
     contentProvider = { preferred = "fernflower" },
-    extendedClientCapabilities = extendedClientCapabilities,
+    -- extendedClientCapabilities = extendedClientCapabilities,
     sources = {
       organizeImports = {
         starThreshold = 9999,
@@ -132,14 +165,13 @@ local config = {
   -- If you don't plan on using the debugger or other eclipse.jdt.ls plugins you can remove this
   init_options = {
     bundles = require("nvim-jdtls-bundles").bundles(),
+    extendedClientCapabilities = extendedClientCapabilities,
   },
 }
 -- This starts a new client & server,
 -- or attaches to an existing client & server depending on the `root_dir`.
 jdtls.start_or_attach(config)
 
--- Add the commands
-require("jdtls.setup").add_commands()
 -- vim.api.nvim_exec(
 --   [[
 -- command! -buffer -nargs=? -complete=custom,v:lua.require'jdtls'._complete_compile JdtCompile lua require('jdtls').compile(<f-args>)
@@ -151,6 +183,3 @@ require("jdtls.setup").add_commands()
 --   ]],
 --   false
 -- )
-
-vim.bo.shiftwidth = 2
-vim.bo.tabstop = 2

@@ -122,6 +122,56 @@ return {
     end,
   },
 
+  -- dap
+
+  {
+    "mfussenegger/nvim-dap",
+    dependencies = {
+      { "rcarriga/nvim-dap-ui", config = true },
+      {
+        "theHamsta/nvim-dap-virtual-text",
+        config = true,
+      },
+    },
+    event = "BufReadPre",
+    keys = {
+      {
+        "<F5>",
+        function()
+          require("dap").continue()
+        end,
+        desc = "Continue",
+      },
+      {
+        "<F8>",
+        function()
+          require("dap").step_out()
+        end,
+        desc = "Step out",
+      },
+      {
+        "<F7>",
+        function()
+          require("dap").step_into()
+        end,
+        desc = "Step out",
+      },
+      {
+        "<F9>",
+        function()
+          require("dap").step_over()
+        end,
+        desc = "Step over",
+      },
+      {
+        "<leader>du",
+        function()
+          require("dapui").toggle()
+        end,
+      },
+    },
+  },
+
   -- surround
   {
     "kylechui/nvim-surround",
