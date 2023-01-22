@@ -13,6 +13,7 @@ require("lazy").setup({
     { import = "plugins" },
   },
   defaults = {
+    version = "*",
     lazy = true, -- every plugin is lazy-loaded by default
     -- version = "*", -- try installing the latest stable version for plugins that support semver
   },
@@ -24,7 +25,7 @@ require("lazy").setup({
         "gzip",
         "matchit",
         "matchparen",
-        "netrwPlugin",
+        -- "netrwPlugin",
         "tarPlugin",
         "tohtml",
         "tutor",
